@@ -78,5 +78,16 @@ Now go to → http://localhost:3000
 ## You can:
 - Upload a file
 - View uploaded files
-- Click on a file to open in a new tab
+- Click on a file to view
 - Download any file
+
+
+---
+
+<img width="2498" height="882" alt="image" src="https://github.com/user-attachments/assets/d789da5d-c6b9-43a1-b674-9b54f3c16590" />
+
+
+---
+
+<img width="2498" height="882" alt="image" src="https://github.com/user-attachments/assets/b2f851c7-3af6-490f-9b01-bef383ee8cf5" />
+
