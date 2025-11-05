@@ -7,6 +7,7 @@ import API from "../api";
  * - Fetches file content from GET /api/files/:id/view
  * - Renders text, image, or PDF content depending on MIME type.
  * - Opens automatically in a new browser tab when clicked in HomePage.
+ * - Supports text, image, pdf, and json files.
  */
 
 export default function FileViewPage() {
@@ -55,9 +56,11 @@ export default function FileViewPage() {
           title={file.name}
           className="w-full h-full border-none"
         ></iframe>
-      ) : file.type === "text" ? (
+      ) : file.type === "text" || file.mimeType === "application/json" ? (
         <pre className="bg-white p-6 rounded border text-sm whitespace-pre-wrap overflow-auto w-full h-full max-w-5xl">
-          {file.content}
+          {file.mimeType === "application/json"
+            ? JSON.stringify(JSON.parse(file.content), null, 2)
+            : file.content}
         </pre>
       ) : (
         <p className="text-gray-600 text-center mt-4">

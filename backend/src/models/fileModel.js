@@ -19,8 +19,10 @@ const fileSchema = new mongoose.Schema({
   mimeType: String,
   size: Number,
   path: String,
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   createdAt: { type: Date, default: Date.now },
 });
+
 
 const File = mongoose.model("File", fileSchema);
 

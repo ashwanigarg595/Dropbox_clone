@@ -54,8 +54,8 @@ Ensure the following are installed on your system:
 (Backend runs on: http://localhost:5000)
 
 Expected output:
-✅ MongoDB connected: mongodb://127.0.0.1:27017/dropbox_demo
-🚀 Server running on port 5000
+MongoDB connected: mongodb://127.0.0.1:27017/dropbox_demo
+Server running on port 5000
 
 
 

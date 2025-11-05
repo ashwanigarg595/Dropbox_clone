@@ -5,7 +5,8 @@ import {
   getAllFiles,
   downloadFile,
   viewFile,
-} from "../fileController.js";
+} from "../controllers/fileController.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
 /**
  * Defines all API endpoints related to file handling.
@@ -22,13 +23,13 @@ const router = express.Router();
 
 const upload = multer({
   dest: "src/uploads/",
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 20 * 1024 * 1024 }, // 10MB
 });
 
 // Define routes
-router.post("/upload", upload.single("file"), uploadFile);
-router.get("/", getAllFiles);
-router.get("/:id/download", downloadFile);
-router.get("/:id/view", viewFile);
+router.post("/upload", verifyToken, upload.single("file"), uploadFile);
+router.get("/", verifyToken, getAllFiles);
+router.get("/:id/download", verifyToken, downloadFile);
+router.get("/:id/view", verifyToken, viewFile);
 
 export default router;

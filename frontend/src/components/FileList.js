@@ -1,3 +1,5 @@
+import API from "../api";
+
 /**
  * Displays the list of uploaded files.
  * - Each file item shows name, size, and type.
@@ -6,6 +8,17 @@
  */
 
 export default function FileList({ files }) {
+  // Handle file download
+  const downloadFile = async (fileId, originalName) => {
+    const res = await API.get(`/files/${fileId}/download`, { responseType: "blob" });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", originalName);
+    document.body.appendChild(link);
+    link.click();
+  };
+
   if (!files.length)
     return (
       <p className="text-center text-gray-500 mt-4">
@@ -31,12 +44,12 @@ export default function FileList({ files }) {
               {(f.size / 1024).toFixed(1)} KB — {f.mimeType}
             </p>
           </div>
-          <a
-            href={`http://localhost:5000/api/files/${f._id}/download`}
+          <button
+            onClick={() => downloadFile(f._id, f.originalName)}
             className="text-blue-600 text-sm hover:underline flex items-center"
           >
             Download
-          </a>
+          </button>
         </div>
       ))}
     </div>

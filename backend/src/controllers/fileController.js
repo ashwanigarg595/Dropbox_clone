@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import File from "./models/fileModel.js";
+import File from "../models/fileModel.js";
+import sanitize from "sanitize-filename";
 
 /**
  * Contains logic for all file operations.
@@ -9,74 +10,110 @@ import File from "./models/fileModel.js";
  * - downloadFile: Streams file for download
  * - viewFile: Returns file content for supported types
  * 
- * Handles validation, MIME type checking, and error handling.
+ * Handles validation, MIME type checking, and error handling through centralized error handler.
  */
 
 
 // Upload File
-export const uploadFile = async (req, res) => {
+export const uploadFile = async (req, res, next) => {
   try {
-    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+    if (!req.file) {
+      const err = new Error("No file uploaded");
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    const safeName = sanitize(req.file.originalname);
+    const filePath = sanitize(req.file.filename);
 
     const file = new File({
       filename: req.file.filename,
-      originalName: req.file.originalname,
+      originalName: safeName,
       mimeType: req.file.mimetype,
       size: req.file.size,
-      path: req.file.path,
+      path: filePath,
+      userId: req.user.id,
     });
+
+    console.log("Saving file metadata:", file);
 
     await file.save();
     res.status(201).json(file);
   } catch (error) {
     console.error("Upload Error:", error);
-    res.status(500).json({ message: "File upload failed" });
+    next(error);
   }
 };
 
-
-// List Files
-export const getAllFiles = async (req, res) => {
+// List Files via pagination
+export const getAllFiles = async (req, res, next) => {
   try {
-    const files = await File.find().sort({ createdAt: -1 });
-    res.json(files);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
+    const [files, total] = await Promise.all([
+      File.find({ userId: req.user.id })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      File.countDocuments({ userId: req.user.id }),
+    ]);
+
+    res.json({
+      files,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    });
   } catch (error) {
     console.error("Fetch Error:", error);
-    res.status(500).json({ message: "Error fetching files" });
+    next(error);
   }
 };
 
-
 // Download File
-export const downloadFile = async (req, res) => {
+export const downloadFile = async (req, res, next) => {
   try {
     const file = await File.findById(req.params.id);
-    if (!file) return res.status(404).json({ message: "File not found" });
+    if (!file) {
+      const err = new Error("File not found");
+      err.statusCode = 400;
+      return next(err);
+    }
 
-    const filePath = path.resolve(file.path);
+    const filePath = path.resolve(path.join("src/uploads", file.path));
     if (fs.existsSync(filePath)) {
       res.download(filePath, file.originalName);
     } else {
-      res.status(404).json({ message: "File not found on disk" });
+      const err = new Error("File not found on disk" + filePath);
+      err.statusCode = 400;
+      return next(err);
     }
   } catch (error) {
     console.error("Download Error:", error);
-    res.status(500).json({ message: "Download failed" });
+    next(error);
   }
 };
 
 
 // View File (for supported formats)
-export const viewFile = async (req, res) => {
+export const viewFile = async (req, res, next) => {
   try {
     const file = await File.findById(req.params.id);
-    if (!file) return res.status(404).json({ message: "File not found" });
+    if (!file) {
+      const err = new Error("File not found");
+      err.statusCode = 400;
+      return next(err);      
+    }
 
     const mime = file.mimeType;
-    const filePath = path.resolve(file.path);
+    const filePath = path.resolve(path.join("src/uploads", file.path));
 
-    if (!fs.existsSync(filePath))
-      return res.status(404).json({ message: "File not found on disk" });
+    if (!fs.existsSync(filePath)) {
+      const err = new Error("File not found on disk" + file);
+      err.statusCode = 400;
+      return next(err);      
+    }
 
     // Supported formats
     if (
@@ -116,13 +153,13 @@ export const viewFile = async (req, res) => {
         });
       }
     } else {
-      return res
-        .status(400)
-        .json({ message: "Unsupported file type for preview" });
+      const err = new Error("Unsupported file type for preview");
+      err.statusCode = 400;
+      return next(err);
     }
   } catch (error) {
     console.error("View error:", error);
-    res.status(500).json({ message: "View failed" });
+    next(error);
   }
 };
 
