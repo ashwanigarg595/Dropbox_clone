@@ -6,8 +6,8 @@ const router = express.Router();
 /**
  * Defines all API endpoints related to auth handling.
  * Routes:
- *  - GET /api/auth/login → User Login
- *  - GET /api/auth/signup → User Signup
+ *  - POST /api/auth/login → User Login
+ *  - POST /api/auth/signup → User Signup
  */
 
 // Define routes

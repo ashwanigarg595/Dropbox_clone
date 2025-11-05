@@ -1,17 +1,17 @@
 # Dropbox (Full Stack App)
 
 A simple Dropbox full stack application built with **React**, **Node.js (Express)**, and **MongoDB**.  
-This project allows users to upload, view, and download files with persistent storage.
+This project allows users to signup, login/logout, upload, view, download and open files with persistent storage.
 
 ---
 
 ## Features
-
-- 📁 Upload files (`.txt`, `.json`, `.jpg`, `.jpeg`, `.png`, `.pdf`)
-- 🧾 View all uploaded files
-- 🔽 Download files
-- 👁️ Open supported files (text, images, JSON, PDF) in a new browser tab
-- 💾 Persistent storage using MongoDB
+- User Login, Logout and Signip
+- Upload files (`.txt`, `.json`, `.jpg`, `.png`, `.pdf`)
+- Get Paginated list of all uploaded files
+- Download files
+- Open supported files (`.txt`, `.json`, `.jpg`, `.png`, `.pdf`) in a new browser tab
+- Persistent storage using MongoDB
 
 ---
 
@@ -76,6 +76,7 @@ Now go to → http://localhost:3000
 
 ---
 ## You can:
+- Signup/Login
 - Upload a file
 - View uploaded files
 - Click on a file to view
