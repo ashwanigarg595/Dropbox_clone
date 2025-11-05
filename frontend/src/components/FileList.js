@@ -8,6 +8,7 @@ import API from "../api";
  */
 
 export default function FileList({ files }) {
+  
   // Handle file download
   const downloadFile = async (fileId, originalName) => {
     const res = await API.get(`/files/${fileId}/download`, { responseType: "blob" });

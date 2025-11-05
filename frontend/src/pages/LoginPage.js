@@ -2,6 +2,7 @@ import { useState } from "react";
 import API from "../api";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import SHA256 from "crypto-js/sha256";
 
 /**
  * Handles User Login Flow
@@ -12,7 +13,10 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const res = await API.post("/auth/login", { username, password });
+      // Hash password before sending
+      const hashedPassword = SHA256(password).toString();
+      
+      const res = await API.post("/auth/login", { username, password: hashedPassword });
       localStorage.setItem("token", res.data.token);
       toast.success("Login successful!");
       window.location.href = "/";

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import API from "../api";
 import { toast } from "react-toastify";
+import SHA256 from "crypto-js/sha256";
 
 /**
  * Handles User Signup Flow
@@ -11,7 +12,10 @@ export default function SignupPage() {
 
   const handleSignup = async () => {
     try {
-      const res = await API.post("/auth/signup", { username, password });
+      // Hash password before sending
+      const hashedPassword = SHA256(password).toString();
+
+      const res = await API.post("/auth/signup", { username, password: hashedPassword });
       localStorage.setItem("token", res.data.token);
       toast.success("Signup successful!");
       window.location.href = "/";
