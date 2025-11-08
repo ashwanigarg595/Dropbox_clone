@@ -6,7 +6,7 @@ This project allows users to signup, login/logout, upload, view, download and op
 ---
 
 ## Features
-- User Login, Logout and Signip
+- User Login, Logout and Signup
 - Upload files (`.txt`, `.json`, `.jpg`, `.png`, `.pdf`)
 - Get Paginated list of all uploaded files
 - Download files
